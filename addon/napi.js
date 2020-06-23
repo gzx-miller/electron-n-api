@@ -40,15 +40,19 @@ doer3.todo().then((data)=>{
 function onSvcRsp(resp) {
     console.log("RegSvcRsp: resp:" + resp);
 }
-napi.onSvcRsp = onSvcRsp;
-var ret = napi.RegSvcRsp(napi.onSvcRsp);
+global.onSvcRsp = onSvcRsp;
+var ret = napi.RegSvcRsp(global.onSvcRsp);
 
 ret = napi.SendSvcReq(
     JSON.stringify({
         "type":"req",
         "cmd":"get_user_info",
-        "params":{ "user_id": 12345678 }
+        "params":{ "user_id": 100001 }
     })
 );
 
-console.log("done");
+setTimeout(() => {
+    napi.UnregSvcRsp();
+    console.log("UnregSvcRsp");
+    console.log("done");
+}, 4000);

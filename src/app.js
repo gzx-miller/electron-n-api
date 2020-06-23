@@ -38,6 +38,27 @@ var app = {
             console.log("Promise3.then data param: " + data);
             return data + 1;
         });
+
+
+        function onSvcRsp(resp) {
+            console.log("RegSvcRsp: resp:" + resp);
+        }
+        global.onSvcRsp = onSvcRsp;
+        var ret = napi.RegSvcRsp(global.onSvcRsp);
+        
+        var reqStr = JSON.stringify({
+            "type":"req",
+            "cmd":"get_user_info",
+            "params":{ "user_id": 100001 }
+        });
+        console.log("SendSvcReq: " + reqStr);
+        ret = napi.SendSvcReq(reqStr);
+        
+        setTimeout(() => {
+            napi.UnregSvcRsp();
+            console.log("UnregSvcRsp");
+            console.log("done");
+        }, 4000);
     }
 }
 
