@@ -36,3 +36,19 @@ doer3.todo().then((data)=>{
     console.log("Promise3.then data param: " + data);
     return data + 1;
 });
+
+function onSvcRsp(resp) {
+    console.log("RegSvcRsp: resp:" + resp);
+}
+napi.onSvcRsp = onSvcRsp;
+var ret = napi.RegSvcRsp(napi.onSvcRsp);
+
+ret = napi.SendSvcReq(
+    JSON.stringify({
+        "type":"req",
+        "cmd":"get_user_info",
+        "params":{ "user_id": 12345678 }
+    })
+);
+
+console.log("done");

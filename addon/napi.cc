@@ -1,8 +1,11 @@
+#include <windows.h>
+#include <string>
 #include <assert.h>
 #include <stdlib.h>
 #include <node_api.h>
 #include <stdio.h>
 #include <ctime>
+
 
 #define NAPI_DESC(name, func) \
   napi_property_descriptor{ name, 0, func, 0, 0, 0, napi_default, 0 }
@@ -19,10 +22,14 @@
     } \
 }
 
-#define Logout(info) { \
-    fprintf(stderr, "%s:%d: %s \n", __FILE__, __LINE__, info); \
+#define Logout(str) { \
+    fprintf(stderr, "%s:%d: %s \n", __FILE__, __LINE__, str); \
     fflush(stderr); \
   }
+#define LogoutInt(nValue) { \
+  fprintf(stderr, "%s:%d: %ld \n", __FILE__, __LINE__, nValue); \
+  fflush(stderr); \
+}
 ///////////////////////////////////////////////////////////////////////
 // 1. Return a string.
 napi_value RetStr(napi_env env, napi_callback_info info) {
@@ -148,8 +155,62 @@ napi_value CreateDoer(napi_env env, const napi_callback_info info) {
 }
 
 ///////////////////////////////////////////////////////////////////////
+// RegSvcRsp, CallSvc
+struct CallbackData{
+  CallbackData(): work(nullptr), tsfn(nullptr) {}
+  napi_async_work work;
+  napi_threadsafe_function tsfn;
+};
+CallbackData* g_cb_data;
+napi_value g_js_cb;
+static void PostSvcRsp(napi_env env, napi_value js_cb, void* context, void* pData) {
+  napi_value argv[1];
+  CHECK(napi_create_string_utf8(env, (char*)pData, NAPI_AUTO_LENGTH, argv));
+  napi_value global;
+  CHECK(napi_get_undefined(env, &global));
+  napi_value result;
+  CHECK(napi_call_function(env, global, js_cb, 1, argv, &result));
+}
+
+napi_value RegSvcRsp(napi_env env, const napi_callback_info info) {
+  napi_value work_name;
+  CallbackData* cb_data;
+  size_t argc = 1;
+  CHECK(napi_get_cb_info(env, info, &argc, &g_js_cb, NULL, (void**)(&cb_data)));
+  CHECK(napi_create_string_utf8(env, "CallAsyncWork", NAPI_AUTO_LENGTH, &work_name));
+  Logout("test1")
+  CHECK(napi_create_threadsafe_function(env, g_js_cb, NULL, work_name,
+        0, 1, NULL, NULL, NULL, PostSvcRsp, &(cb_data->tsfn)));
+  Logout("test2")
+  return nullptr;
+}
+
+napi_value SendSvcReq(napi_env env, const napi_callback_info info) {
+  size_t argc = 1;
+  napi_value args[1];
+  CHECK(napi_get_cb_info(env, info, &argc, args, nullptr, nullptr));
+  size_t realSize = 0;
+  CHECK(napi_get_value_string_utf8(env, args[0], nullptr, realSize, &realSize));   // get length
+  char* buf = new char[realSize];
+  CHECK(napi_get_value_string_utf8(env, args[0], buf, realSize, &realSize));
+
+  Logout(buf);
+  delete buf;
+
+  std::string respStr("{\"type\":\"rsp\",\"cmd\":\"get_user_info\",\"params\":{ \"user_name\": \"miller\" }}");
+  CHECK(napi_call_threadsafe_function(g_cb_data->tsfn, (void*)respStr.c_str(), napi_tsfn_blocking));
+  return nullptr;
+}
+
+static void addon_getting_unloaded(napi_env env, void* data, void* hint) {
+  CallbackData* cb_data = (CallbackData*)data;
+  free(cb_data);
+}
+
+///////////////////////////////////////////////////////////////////////
 // Init, exports functions.
 napi_value Init(napi_env env, napi_value exports) {
+  g_cb_data = new CallbackData();
   Logout("napi init");
   napi_property_descriptor desc;
   
@@ -171,6 +232,13 @@ napi_value Init(napi_env env, napi_value exports) {
   desc = NAPI_DESC("CreateDoer", CreateDoer);
   CHECK(napi_define_properties(env, exports, 1, &desc));
 
+  desc = NAPI_DESC_Data("RegSvcRsp", RegSvcRsp, g_cb_data);
+  CHECK(napi_define_properties(env, exports, 1, &desc));
+  
+  desc = NAPI_DESC("SendSvcReq", SendSvcReq);
+  CHECK(napi_define_properties(env, exports, 1, &desc));
+
+  CHECK(napi_wrap(env, exports, g_cb_data, addon_getting_unloaded, NULL, NULL));
   return exports;
 }
 
