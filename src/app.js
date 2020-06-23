@@ -53,6 +53,7 @@ var app = {
         });
         console.log("SendSvcReq: " + reqStr);
         ret = napi.SendSvcReq(reqStr);
+        console.log("SendSvcReq ret: " + ret);
         
         setTimeout(() => {
             napi.UnregSvcRsp();

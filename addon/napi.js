@@ -43,13 +43,14 @@ function onSvcRsp(resp) {
 global.onSvcRsp = onSvcRsp;
 var ret = napi.RegSvcRsp(global.onSvcRsp);
 
-ret = napi.SendSvcReq(
-    JSON.stringify({
-        "type":"req",
-        "cmd":"get_user_info",
-        "params":{ "user_id": 100001 }
-    })
-);
+var reqStr = JSON.stringify({
+    "type":"req",
+    "cmd":"get_user_info",
+    "params":{ "user_id": 100001 }
+});
+console.log("SendSvcReq: " + reqStr);
+ret = napi.SendSvcReq(reqStr);
+console.log("SendSvcReq ret: " + ret);
 
 setTimeout(() => {
     napi.UnregSvcRsp();
