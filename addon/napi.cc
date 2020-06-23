@@ -126,8 +126,7 @@ static void WorkComplete(napi_env env, napi_status status, void* data) {
   }
 }
 
-napi_value fetch(napi_env env, napi_callback_info info) {
-  // 从info中取出url, option(method, header, body)
+napi_value todo(napi_env env, napi_callback_info info) {
   napi_value work_name, promise;
   AddonData* addon_data;
   CHECK(napi_get_cb_info(env, info, NULL, NULL, NULL, (void**)(&addon_data)));
@@ -139,13 +138,13 @@ napi_value fetch(napi_env env, napi_callback_info info) {
   return promise;
 }
 
-napi_value CreateFetcher(napi_env env, const napi_callback_info info) {
-  napi_value fetcher;
-  CHECK(napi_create_object(env, &fetcher));
+napi_value CreateDoer(napi_env env, const napi_callback_info info) {
+  napi_value doer;
+  CHECK(napi_create_object(env, &doer));
   AddonData* addon_data = new AddonData();
-  napi_property_descriptor desc = NAPI_DESC_Data("fetch", fetch, addon_data);
-  CHECK(napi_define_properties(env, fetcher, 1, &desc));
-  return fetcher;
+  napi_property_descriptor desc = NAPI_DESC_Data("todo", todo, addon_data);
+  CHECK(napi_define_properties(env, doer, 1, &desc));
+  return doer;
 }
 
 ///////////////////////////////////////////////////////////////////////
@@ -169,7 +168,7 @@ napi_value Init(napi_env env, napi_value exports) {
   desc = NAPI_DESC("CreateFunction", CreateFunction);
   CHECK(napi_define_properties(env, exports, 1, &desc));
   
-  desc = NAPI_DESC("CreateFetcher", CreateFetcher);
+  desc = NAPI_DESC("CreateDoer", CreateDoer);
   CHECK(napi_define_properties(env, exports, 1, &desc));
 
   return exports;

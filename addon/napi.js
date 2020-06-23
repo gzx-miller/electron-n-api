@@ -12,8 +12,8 @@ console.log("CreateObject: " + obj1.msg);
 var func = napi.CreateFunction();
 console.log("CreateFunction: " + func());
 
-var fetcher1 = napi.CreateFetcher();
-let promise1 = fetcher1.fetch();
+var doer1 = napi.CreateDoer();
+let promise1 = doer1.todo();
 promise1.then(data => {
     console.log("Promise1.0.then data param: " + data);
 });
@@ -23,19 +23,16 @@ promise1.then((data)=>{
 }).then((data)=>{
     console.log("Promise1.2.then data param: " + data);
     return data + 1;
-}).then((data)=>{
-    console.log("Promise1.3.then data param: " + data);
-    return data + 1;
 });
 
-var fetcher2 = napi.CreateFetcher();
-fetcher2.fetch().then((data)=>{
+var doer2 = napi.CreateDoer();
+doer2.todo().then((data)=>{
     console.log("Promise2.then data param: " + data);
     return data + 1;
 });
 
-var fetcher3 = napi.CreateFetcher();
-fetcher3.fetch().then((data)=>{
+var doer3 = napi.CreateDoer();
+doer3.todo().then((data)=>{
     console.log("Promise3.then data param: " + data);
     return data + 1;
 });
