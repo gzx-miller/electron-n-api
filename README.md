@@ -1,4 +1,4 @@
-# electron-n-api
+# Electron-n-api
 electron use n-api extend native interface. 
 
 
