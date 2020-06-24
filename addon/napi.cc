@@ -187,9 +187,10 @@ napi_value RegSvcRsp(napi_env env, const napi_callback_info info) {
 napi_value UnregSvcRsp(napi_env env, const napi_callback_info info) {
   g_js_cb = nullptr;
   CHECK(napi_release_threadsafe_function(g_cb_data->tsfn, napi_tsfn_release));
+  // 这里没启动work, 所以不需要删除work
   // CHECK(napi_delete_async_work(env, g_cb_data->work));
   g_cb_data->work = nullptr;
-  g_cb_data->tsfn = NULL;
+  g_cb_data->tsfn = nullptr;
   delete g_cb_data;
   return nullptr;
 }
