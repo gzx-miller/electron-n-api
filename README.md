@@ -27,7 +27,7 @@ cd ../
 npm run start
 ```
 
-# Relative article
+# My blog for this code
 
 [Electron通过nodejs的Addon(n-api)实现高可扩展性接口](https://blog.csdn.net/allen8612433/article/details/106937163)
 
