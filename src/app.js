@@ -2,6 +2,14 @@ var napi = require('bindings')('napi');
 
 var app = {
     run: function() {
+        // js player in iframe
+        // let ifm = document.createElement('iframe');
+        // ifm.setAttribute("width", 600);
+        // ifm.setAttribute("height", 400);
+        // ifm.setAttribute("src", "http://test-y.xxx.com/player3.html");
+        // let body = document.getElementsByTagName("body")[0];
+        // body.appendChild(ifm);
+
         console.log("RetStr: " + napi.RetStr());
         console.log("Add: " + napi.Add(1, 2)); 
         napi.RunCallback((msg) => {
