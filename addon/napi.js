@@ -39,6 +39,11 @@ doer3.todo().then((data)=>{
 
 function onSvcRsp(resp) {
     console.log("RegSvcRsp: resp:" + resp);
+    setTimeout(() => {
+        napi.UnregSvcRsp();
+        console.log("UnregSvcRsp");
+    }, 4000);
+    return 1;
 }
 global.onSvcRsp = onSvcRsp;
 var ret = napi.RegSvcRsp(global.onSvcRsp);
@@ -52,8 +57,4 @@ console.log("SendSvcReq: " + reqStr);
 ret = napi.SendSvcReq(reqStr);
 console.log("SendSvcReq ret: " + ret);
 
-setTimeout(() => {
-    napi.UnregSvcRsp();
-    console.log("UnregSvcRsp");
-    console.log("done");
-}, 4000);
+
