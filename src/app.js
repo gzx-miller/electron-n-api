@@ -3,17 +3,17 @@ let napi = require('bindings')('napi');
 let app = {
     run: function() {
         // js player in iframe,  127.0.0.1 test-y.xxx.com
-        //let ifm1 = document.createElement('iframe');
-        //ifm1.setAttribute("width", 600);
-        //ifm1.setAttribute("height", 400);
-        //ifm1.setAttribute("src", "http://test-y.xxx.com/jsplayer.html"); 
-        //let ifm2 = document.createElement('iframe');
-        //ifm2.setAttribute("width", 600);
-        //ifm2.setAttribute("height", 400);
-        //ifm2.setAttribute("src", "http://test-y.xxx.com/jsplayer.html"); 
-        //let body = document.getElementsByTagName("body")[0];
-        //body.appendChild(ifm1);
-        //body.appendChild(ifm2);
+        // let ifm1 = document.createElement('iframe');
+        // ifm1.setAttribute("width", 600);
+        // ifm1.setAttribute("height", 400);
+        // ifm1.setAttribute("src", "http://test-y.xxx.com/jsplayer.html"); 
+        // let ifm2 = document.createElement('iframe');
+        // ifm2.setAttribute("width", 600);
+        // ifm2.setAttribute("height", 400);
+        // ifm2.setAttribute("src", "http://test-y.xxx.com/jsplayer.html"); 
+        // let body = document.getElementsByTagName("body")[0];
+        // body.appendChild(ifm1);
+        // body.appendChild(ifm2);
         
         // 1. call native function
         console.log("RetStr: " + napi.RetStr());
@@ -89,19 +89,19 @@ let app = {
         `;
         ctx.imageSmoothingEnabled = false;
 
-        global.onReceiveFrame = function onReceiveFrame(status) {
-            if (status === 1) {
-                ctx.putImageData(global.frameBuf, 0, 0); 
-            } else {
-                setTimeout(() => {
-                    napi.StopDecode(global.codeIndex);
-                    napi.UnRegReceiveFrame();
-                }, 100);
-            }
-        }
-        napi.RegRcvFrame(global.onReceiveFrame);
-        global.frameBuf = ctx.createImageData(bcr.width, bcr.height);
-        global.codeIndex = napi.StartDecode("a.h265", global.frameBuf.buffer);
+        // global.onReceiveFrame = function onReceiveFrame(status) {
+        //     if (status === 1) {
+        //         ctx.putImageData(global.frameBuf, 0, 0); 
+        //     } else {
+        //         setTimeout(() => {
+        //             napi.StopDecode(global.codeIndex);
+        //             napi.UnRegReceiveFrame();
+        //         }, 100);
+        //     }
+        // }
+        // napi.RegRcvFrame(global.onReceiveFrame);
+        // global.frameBuf = ctx.createImageData(bcr.width, bcr.height);
+        // global.codeIndex = napi.StartDecode("a.h265", global.frameBuf.buffer);
     }
 }
 
